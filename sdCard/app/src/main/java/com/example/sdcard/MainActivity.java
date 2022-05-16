@@ -3,37 +3,66 @@ package com.example.sdcard;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.view.View;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-
-    EditText e1,e2,e3;
-    Button b1,b2;
+public class MainActivity extends AppCompatActivity {
+    Button btWrite, btRead;
+    EditText etFileName, etStudentName, etCGPA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        e1 = (EditText) findViewById(R.id.editText);
-        e2 = (EditText) findViewById(R.id.editText2);
-        e3 = (EditText) findViewById(R.id.editTextTextPersonName3);
-        b1 = (Button) findViewById(R.id.button);
-        b2 = (Button) findViewById(R.id.button2);
-
-        b1.setOnClickListener((View.OnClickListener) this);
-        b2.setOnClickListener((View.OnClickListener) this);
+        btWrite = (Button) findViewById(R.id.button);
+        btRead = (Button) findViewById(R.id.button2);
+        etFileName = (EditText) findViewById(R.id.editTextTextPersonName);
+        etStudentName = (EditText) findViewById(R.id.editTextTextPersonName2);
+        etCGPA = (EditText) findViewById(R.id.editTextTextPersonName3);
+        btWrite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeData();
+            }
+        });
+        btRead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                readData();
+            }
+        });
     }
-
-    @Override
-    public void onClick(View view) {
-        if(view==b1){
+    public void writeData() {
+        String data = "";
+        String fileName = etFileName.getText().toString();
+        try {
+            FileOutputStream fos = openFileOutput(fileName, MODE_PRIVATE);
+            data = etStudentName.getText().toString() + "," + etCGPA.getText().toString();
+            fos.write(data.getBytes());
+            fos.close();
+        } catch (Exception e) {
 
         }
-        else if(view==b2){
+    }
 
+    public void readData() {
+        int c;
+        String temp = "";
+        String fileName = etFileName.getText().toString();
+        try {
+            FileInputStream fis = openFileInput(fileName);
+            while ((c = fis.read()) != -1) {
+                temp = temp + Character.toString((char) c);
+            }
+            fis.close();
+            String arr[];
+            arr = temp.split(",");
+            etStudentName.setText(arr[0]);
+            etCGPA.setText(arr[1]);
+        } catch(Exception e) {
         }
     }
 }
